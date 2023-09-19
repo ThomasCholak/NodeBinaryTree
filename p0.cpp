@@ -1,25 +1,24 @@
 
 #include <iostream>
-
 #include "tree.h"
+#include <string>
 
-#include <iostream>
-#include <vector>
+using std::string;
+using std::stringstream;
+using std::cout;
+using std::endl;
 
 using namespace std;
 
 int main() {
-    std::string str = "61 667 143 66 17 52 21 52 21 779 52 16";
+    std::string str1 = "61 667 143 66 17 52 21 52 21 779 52 16";
 
-    //calls on function to break apart str and store as 'result1'
-    std::vector<std::string> result = sepArray(str);
+    std::vector<int> result = sepArray(str1);
 
-    // Use the returned vector as needed
     for (const auto& item : result) {
         std::cout << item << std::endl;
     }
 
     return 0;
 
-    return 0;
 }

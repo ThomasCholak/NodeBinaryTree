@@ -4,18 +4,23 @@
 
 #include <bits/stdc++.h>
 
-// https://www.geeksforgeeks.org/split-string-by-space-into-vector-in-cpp-stl/
-std::vector<std::string> sepArray(const std::string& str) {
 
-    std::stringstream ss(str);
-    std::string s;
-    std::vector<std::string> DataNumbers1;
+using std::string;
+using std::stringstream;
+using std::cout;
+using std::endl;
 
-    while (getline(ss, s, ' ')) {
-        DataNumbers1.push_back(s);
+std::vector<int> sepArray(const std::string& str) {
+
+    stringstream stream(str);
+
+    std::vector<int> values;
+    int n;
+    while(stream >> n){
+        values.push_back(n);
     }
 
-    return DataNumbers1;
+    return values;
 
 }
 

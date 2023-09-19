@@ -3,6 +3,7 @@
 
 #include <bits/stdc++.h>
 
-std::vector<std::string> sepArray(const std::string& str);
+std::vector<int> sepArray(const std::string& str);
+bool areAllIntegers(const std::vector<std::string>& tokens);
 
 #endif
