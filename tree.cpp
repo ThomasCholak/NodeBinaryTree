@@ -24,6 +24,4 @@ std::vector<int> sepArray(const std::string& str) {
 
 }
 
-//void buildTree(std::vector<std::string> vector1) {
-//
-//}
+void BuildTree
