@@ -2,9 +2,9 @@
 #define NODE_H
 
 struct Node {
-    int level;
-    Node* left;
-    Node* right;
+    int level;               //tracks the depth level of the node
+    struct node* left;
+    struct node* right;
 };
 
 #endif
