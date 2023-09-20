@@ -65,7 +65,7 @@ void buildTree(const std::vector<int>& vector) {
         }
     }
 
-    int n = sizeof(result);
+    int n = num;
 
     insertionSort(result, n);  //sorts via Insertion sort
 
