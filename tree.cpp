@@ -24,7 +24,8 @@ std::vector<int> sepArray(const std::string& str) {
 
 }
 
-void insertionSort(std::vector<int>& arr, int n) { //sorts arrays from lowest to greatest
+//sorts array values from lowest to greatest
+void insertionSort(std::vector<int>& arr, int n) {
     for (int i = 1; i < n; i++) { int key = arr[i]; int j = i - 1; while (j >= 0 && arr[j] > key) {
             arr[j + 1] = arr[j];
             j--;

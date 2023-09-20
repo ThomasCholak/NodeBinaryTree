@@ -21,7 +21,7 @@ using namespace std;
  * Function for removing duplicates from an array:
  * https://www.youtube.com/watch?v=zvXSbyqNvsw
  *
- * Function for passing a string into an vector of integers:
+ * Function for passing a string into a vector of integers:
  * //https://stackoverflow.com/questions/4475634/pass-a-string-in-c
  *
  * Insertion sorting algorithm:
@@ -39,23 +39,22 @@ int main() {
 
 void buildTree(const std::vector<int>& vector) {
 
-    //std::vector<Node> nodes;
-
     std::vector<int> root_nodes = vector;
     std::vector<int> leaf_nodes = vector;
 
     std::vector<int>::size_type num = root_nodes.size(); //stores new size of array after removing duplicates
-    std::vector<int>::size_type num2 = root_nodes.size(); //stores new size of array after removing duplicates
+    std::vector<int>::size_type num2 = leaf_nodes.size(); //stores new size of array after removing duplicates
 
-    for (int & i : root_nodes) //locates the first number of every entry
+    for (int & i : root_nodes)         //locates the first number of every entry
     {
-        while (i >= 10)  //continues dividing by 10 until first digit is found
+        while (i >= 10)                //continues dividing by 10 until first digit is found
         {
             i /= 10;
         }
     }
 
-    for (int i = 0; i < num; i++)  //loop to remove duplicates from root nodes
+    //loop to remove duplicates from root nodes
+    for (int i = 0; i < num; i++)
     {
         for (int j = i + 1; j < num; j++)
         {
@@ -73,19 +72,27 @@ void buildTree(const std::vector<int>& vector) {
 
     int n = num;
 
-    insertionSort(root_nodes, n);  //sorts root_nodes via Insertion sort
+    //sorts root_nodes via Insertion sort
+    insertionSort(root_nodes, n);
 
     Node nodes[num];
 
+    //assigns parents to each node struct
     for (int i = 0; i < num; ++i) {
         nodes[i].parent_node = root_nodes[i];
     }
 
-    for (int i = 0; i < num; ++i) {
-        std::cout << "\n" << nodes[i].parent_node;
+    /*
+    for (int i = 0; i < leaf_nodes.size(); ++i) {
+        std::cout << "\n" << leaf_nodes[i];
+        //std::cout << "\n" << nodes[i].parent_node;
     }
+    */
+    // cout << "\n" ;
+    // cout << "\n" ;
 
-    for (int i = 0; i < num2; i++)  //loop to remove duplicates from leaf nodes
+    //loop to remove duplicates from leaf nodes
+    for (int i = 0; i < num2; i++)
     {
         for (int j = i + 1; j < num2; j++)
         {
@@ -101,7 +108,7 @@ void buildTree(const std::vector<int>& vector) {
         }
     }
 
-    std::vector<int> leaf_nodes2 = leaf_nodes;
+    std::vector<int> leaf_nodes2 = leaf_nodes;  //need a duplicate parallel array for leaf_nodes
 
     for (int & i : leaf_nodes)
     {
@@ -111,40 +118,27 @@ void buildTree(const std::vector<int>& vector) {
         }
     }
 
-    /*
-    for (size_t i = 0; i < leaf_nodes.size(); i++)
-    {
-        if (leaf_nodes[i] != root_nodes[i])
-        {
-            Node newNode;
-            newNode.parent_node = {static_cast<double>(root_nodes[i])};
-            newNode.child_nodes = {static_cast<double>(leaf_nodes2[i])};
-            nodes.push_back(newNode);
+    // prints leaf nodes
+    for (int i = 0; i < num2; ++i) {
+        std::cout << "\n" << leaf_nodes[i];
+        //std::cout << "\n" << nodes[i].parent_node;
+    }
+    cout << "\n" ;
+
+    // https://www.geeksforgeeks.org/given-an-array-arr-find-the-maximum-j-i-such-that-arrj-arri/
+    for (int i = 0; i < sizeof(root_nodes) / sizeof(root_nodes[0]); i++) {
+        for (int j = 0; j < sizeof(leaf_nodes) / sizeof(leaf_nodes[0]); j++) {
+            if (root_nodes[i] == leaf_nodes[j]) {
+                nodes[i].child_nodes.push_back(leaf_nodes[i]);
+            }
         }
     }
 
-    for (const Node& node : nodes) {
-        for (const double& parent : node.parent_node) {
-            std::cout << parent << ":";
+    for (int i = 0; i < num; ++i) {
+        std::cout << "\n" << nodes[i].parent_node << ":";
+        for (const double& child : nodes[i].child_nodes) {
+            std::cout << " " << child;
         }
-        for (const double& child : node.child_nodes) {
-            std::cout << child << " ";
-        }
-        std::cout << std::endl;
-    }
-    */
-
-    /*
-    std::cout << "\n";
-
-    for (int i = 0; i < num; i++) {
-        std::cout << root_nodes[i] << endl;
     }
 
-    std::cout << "\n";
-
-    for (int i = 0; i < num2; i++) {
-        std::cout << leaf_nodes[i] << endl;
-    }
-     */
 }
