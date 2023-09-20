@@ -1,5 +1,6 @@
 
 #include "tree.h"
+#include "node.h"
 
 #include <iostream>
 #include <string>
@@ -38,10 +39,15 @@ int main() {
 
 void buildTree(const std::vector<int>& vector) {
 
-    std::vector<int> result = vector;
-    std::vector<int>::size_type num = result.size(); //stores new size of array after removing duplicates
+    //std::vector<Node> nodes;
 
-    for (int & i : result) //locates the first number of every entry
+    std::vector<int> root_nodes = vector;
+    std::vector<int> leaf_nodes = vector;
+
+    std::vector<int>::size_type num = root_nodes.size(); //stores new size of array after removing duplicates
+    std::vector<int>::size_type num2 = root_nodes.size(); //stores new size of array after removing duplicates
+
+    for (int & i : root_nodes) //locates the first number of every entry
     {
         while (i >= 10)  //continues dividing by 10 until first digit is found
         {
@@ -49,15 +55,15 @@ void buildTree(const std::vector<int>& vector) {
         }
     }
 
-    for (int i = 0; i < num; i++)  //loop to remove duplicates from array
+    for (int i = 0; i < num; i++)  //loop to remove duplicates from root nodes
     {
         for (int j = i + 1; j < num; j++)
         {
-            if (result[i] == result[j])
+            if (root_nodes[i] == root_nodes[j])
             {
                 for (int k = j; k < num; k++)
                 {
-                    result[k] = result[k + 1];
+                    root_nodes[k] = root_nodes[k + 1];
                 }
                 num--;
                 j--;
@@ -67,9 +73,78 @@ void buildTree(const std::vector<int>& vector) {
 
     int n = num;
 
-    insertionSort(result, n);  //sorts via Insertion sort
+    insertionSort(root_nodes, n);  //sorts root_nodes via Insertion sort
+
+    Node nodes[num];
+
+    for (int i = 0; i < num; ++i) {
+        nodes[i].parent_node = root_nodes[i];
+    }
+
+    for (int i = 0; i < num; ++i) {
+        std::cout << "\n" << nodes[i].parent_node;
+    }
+
+    for (int i = 0; i < num2; i++)  //loop to remove duplicates from leaf nodes
+    {
+        for (int j = i + 1; j < num2; j++)
+        {
+            if (leaf_nodes[i] == leaf_nodes[j])
+            {
+                for (int k = j; k < num2; k++)
+                {
+                    leaf_nodes[k] = leaf_nodes[k + 1];
+                }
+                num2--;
+                j--;
+            }
+        }
+    }
+
+    std::vector<int> leaf_nodes2 = leaf_nodes;
+
+    for (int & i : leaf_nodes)
+    {
+        while (i >= 10)
+        {
+            i /= 10;
+        }
+    }
+
+    /*
+    for (size_t i = 0; i < leaf_nodes.size(); i++)
+    {
+        if (leaf_nodes[i] != root_nodes[i])
+        {
+            Node newNode;
+            newNode.parent_node = {static_cast<double>(root_nodes[i])};
+            newNode.child_nodes = {static_cast<double>(leaf_nodes2[i])};
+            nodes.push_back(newNode);
+        }
+    }
+
+    for (const Node& node : nodes) {
+        for (const double& parent : node.parent_node) {
+            std::cout << parent << ":";
+        }
+        for (const double& child : node.child_nodes) {
+            std::cout << child << " ";
+        }
+        std::cout << std::endl;
+    }
+    */
+
+    /*
+    std::cout << "\n";
 
     for (int i = 0; i < num; i++) {
-        std::cout << result[i] << endl;
+        std::cout << root_nodes[i] << endl;
     }
+
+    std::cout << "\n";
+
+    for (int i = 0; i < num2; i++) {
+        std::cout << leaf_nodes[i] << endl;
+    }
+     */
 }
