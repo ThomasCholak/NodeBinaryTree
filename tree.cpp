@@ -26,9 +26,9 @@ void buildTree(const std::string& node_str) {
     // https://www.reddit.com/r/cpp_questions/comments/bjims8/the_best_way_to_remove_duplicates_from_vector_of/
     node_int.erase(std::remove_if(node_int.begin(), node_int.end(),
                                   [&unique_values](int x)
-                           {
-                               return !unique_values.insert(x).second;
-                           }),
+                                  {
+                                      return !unique_values.insert(x).second;
+                                  }),
                    node_int.end());
 
     // Code to organize values via mapping:
