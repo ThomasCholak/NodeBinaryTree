@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <unordered_set>
 #include <cstddef>
+#include <string>
 
 void buildTree(const std::string& node_str) {
 
@@ -57,13 +58,6 @@ void buildTree(const std::string& node_str) {
     std::vector<int> root_nodes(root_nodes2.begin(), root_nodes2.end());
     std::reverse(root_nodes.begin(), root_nodes.end());
 
-    std::cout << "Preorder traversal:\n";
-    for (const int& num : root_nodes) {  //'root_nodes' is preorder
-        std::cout << num << " ";
-    }
-    std::cout << "\n";
-
-
     // Finds first digit and pushes it to another vector:
     // https://www.scaler.com/topics/cpp-program-to-find-first-and-last-digit-of-a-number/
     for (int num2 : unique_values) {
@@ -76,18 +70,21 @@ void buildTree(const std::string& node_str) {
     }
 
     std::vector<int> inOrder;
+    std::vector<std::string> inOrderPair;
 
-    // Printing via pairs
-    // https://stackoverflow.com/questions/19228994/how-to-print-a-type-vectorpairchar-int-to-screen-c
-    std::cout << "Inorder traversal:\n";
-    for (auto &x:sorted_array)
+   // Printing via pairs
+   // https://stackoverflow.com/questions/19228994/how-to-print-a-type-vectorpairchar-int-to-screen-c
+    for (auto &x : sorted_array)
     {
-        inOrder.push_back(x.first);  //stores 'first' elements from the vector pair
-        std::cout << x.first << ":";
+        std::string inOrder_pairs = std::to_string(x.first) + ":";
+        inOrder.push_back(x.first);  // stores 'first' elements from the vector pair
+        // std::cout << x.first << ":";
         for (int num2 : x.second) {
-            std::cout << num2 << " ";
+            // std::cout << num2 << " ";
+            inOrder_pairs += std::to_string(num2) + " ";
         }
-        std::cout << std::endl;
+        // std::cout << std::endl;
+        inOrderPair.push_back(inOrder_pairs); // Add the pair entry to inOrderPair
     }
 
 
@@ -96,39 +93,13 @@ void buildTree(const std::string& node_str) {
     int in[n];
     copy(inOrder.begin(), inOrder.end(), in);
 
-
-    // Print the 'in' array
-    /*
-    std::cout << "Inorder array: ";
-    for (int i = 0; i < n; i++) {
-        std::cout << in[i] << " ";
-    }
-    std::cout << std::endl;
-     */
-
     std::vector<int> preOrder;
 
     int n2 = root_nodes.size();
     int pre[n2];                                                       // pre = postOrder
     copy(root_nodes.begin(), root_nodes.end(), pre);
 
-    // Print the 'pre' array
-    /*
-    std::cout << "Preorder array: ";
-    for (int i = 0; i < n2; i++) {
-        std::cout << pre[i] << " ";
-    }
-    std::cout << std::endl;
-     */
-
     std::vector<int> postOrder = printPostorder(in, pre, n);
-
-    //Prints the PostOrder Traversals
-    std::cout << "Postorder traversal:" << std::endl;
-    for (const int& num : postOrder) {
-        std::cout << num << " ";
-    }
-    std::cout << std::endl;
 
     int n3 = postOrder.size();
     int post[n3];
@@ -136,13 +107,82 @@ void buildTree(const std::string& node_str) {
 
     int size2 = sizeof(pre) / sizeof(pre[0]);
 
+    //Builds the tree
+    node* root = constructTree(pre, post, size2);
+    std::vector<std::string> depth_pre = printInorder(root, 0);
+
+    //// string comparisons
+    int pre_size = sizeof(pre) / sizeof(pre[0]);  //pre string
+    std::vector<std::string> preString;
+
+    for (int i = 0; i < pre_size; i++) {
+        preString.push_back(std::to_string(pre[i]));
+    }
+
+
+    int post_size = sizeof(post) / sizeof(post[0]);  // post string
+    std::vector<std::string> postString;
+
+    for (int i = 0; i < post_size; i++) {
+        postString.push_back(std::to_string(post[i]));
+    }
+
+    // Strings
+
+    std::vector<std::string> pre2;
+    std::vector<std::string> post2;
+
+
+    for (const std::string& str1 : preString) {
+        for (const std::string& str2 : inOrderPair) {
+            if (str1[0] == str2[0]) {
+                pre2.push_back(str2);
+            }
+        }
+    }
+
+    for (const std::string& str1 : postString) {
+        for (const std::string& str2 : inOrderPair) {
+            if (str1[0] == str2[0]) {
+                post2.push_back(str2);
+            }
+        }
+    }
+
+    std::cout << "Pre-String" << std::endl;
+    for (const std::string& str1 : pre2) {
+        for (const std::string& str2 : depth_pre) {
+            if (str1[0] == str2.back()) {
+                std::string substr = str1.substr(1);
+                std::cout << str2 << substr << std::endl;
+            }
+        }
+    }
 
     std::cout << std::endl;
 
-    //Builds the tree
-    std::cout << "Preorder Depth Map: \n";
-    node* root = constructTree(pre, post, size2);
-    printInorder(root, 0);
+    std::cout << "Post-String" << std::endl;
+    for (const std::string& str1 : post2) {
+        for (const std::string& str2 : depth_pre) {
+            if (str1[0] == str2.back()) {
+                std::string substr = str1.substr(1);
+                std::cout << str2 << substr << std::endl;
+            }
+        }
+    }
+
+    std::cout << std::endl;
+
+    std::cout << "Inorder-String" << std::endl;
+    for (const std::string& str1 : inOrderPair) {
+        for (const std::string& str2 : depth_pre) {
+            if (str1[0] == str2.back()) {
+                std::string substr = str1.substr(1);
+                std::cout << str2 << substr << std::endl;
+            }
+        }
+    }
+
 }
 
 // "search" and "printPostOrder" functions from here:
@@ -215,17 +255,27 @@ node* constructTree(int pre[], int post[], int size) {
     return constructTreeUtil(pre, post, &preIndex, 0, size - 1, size);
 }
 
-void printInorder(node* node, int depth) {
+std::vector<std::string> printInorder(node* node, int depth) {
+
+    std::vector<std::string> inOrder;
+
     if (node == nullptr)
-        return;
+        return inOrder;
 
     // uses stars for depth mapping:
     // https://stackoverflow.com/questions/2596953/multiply-char-by-integer-c
     char star = '*';
     int num = depth * 2;
 
-    std::cout << std::string(num, star)  << node->data << "\n";
+    std::string line = std::string(num, star) + std::to_string(node->data);
+    inOrder.push_back(line);
 
-    printInorder(node->left, depth + 1);
-    printInorder(node->right, depth + 1);
+    // Concatenate the left and right subtree results
+    std::vector<std::string> leftBranch = printInorder(node->left, depth + 1);
+    std::vector<std::string> rightBranch = printInorder(node->right, depth + 1);
+
+    inOrder.insert(inOrder.end(), leftBranch.begin(), leftBranch.end());
+    inOrder.insert(inOrder.end(), rightBranch.begin(), rightBranch.end());
+
+    return inOrder;
 }
