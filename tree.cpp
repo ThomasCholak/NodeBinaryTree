@@ -1,3 +1,4 @@
+// Thomas Cholak
 
 #include "tree.h"
 #include "node.h"
@@ -6,39 +7,50 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_set>
-#include <cstddef>
 #include <string>
+#include <algorithm>
 
-void buildTree(const std::string& node_str) {
-
+void buildTree(const std::string& node_str)
+{
     // Converts string into an integer vector:
     // https://stackoverflow.com/questions/20659066/parse-string-to-vector-of-int
     std::istringstream iss(node_str);
     std::vector<int> node_int;
     int num;
 
-    while (iss >> num) {
+    while (iss >> num)
+    {
         node_int.push_back(num);
     }
 
-    std::unordered_set<int> unique_values;  //empty vector to return unique values to
+    std::map<int, std::vector<int>> firstDigits;
 
-    // code to remove non-unique integers:
-    // https://www.reddit.com/r/cpp_questions/comments/bjims8/the_best_way_to_remove_duplicates_from_vector_of/
-    node_int.erase(std::remove_if(node_int.begin(), node_int.end(),
-                                  [&unique_values](int x)
-                                  {
-                                      return !unique_values.insert(x).second;
-                                  }),
-                   node_int.end());
+    for (int num : node_int) {
+        int first_digit = num;
 
-    // Code to organize values via mapping:
-    // https://stackoverflow.com/questions/19842035/how-can-i-sort-a-stdmap-first-by-value-then-by-key
-    std::map<int, std::vector<int>> sorted_array;
+        while (first_digit >= 10) {
+            first_digit /= 10;
+        }
 
-    std::vector<int> root_nodes3 = node_int;
+        firstDigits[first_digit].push_back(num);
+    }
 
-    for (int & i : root_nodes3)
+    std::vector<int> inOrder;
+    std::vector<std::string> inOrderPair;
+
+    // Print the organized arrays
+    for (const auto& entry : firstDigits) {
+        inOrder.push_back(entry.first);
+        std::string inOrder_pairs = std::to_string(entry.first) + ":";
+        for (int num : entry.second) {
+            inOrder_pairs += std::to_string(num) + " ";
+        }
+        inOrderPair.push_back(inOrder_pairs);
+    }
+
+    std::vector<int> preOrder = node_int;
+
+    for (int & i : preOrder)
     {
         while (i >= 10)
         {
@@ -46,137 +58,128 @@ void buildTree(const std::string& node_str) {
         }
     }
 
-    std::unordered_set<int> root_nodes2;
+    std::unordered_set<int> seen;
 
-    node_int.erase(std::remove_if(root_nodes3.begin(), root_nodes3.end(),
-                                  [&root_nodes2](int x)
+    preOrder.erase(std::remove_if(preOrder.begin(), preOrder.end(),
+                                  [&seen](int x)
                                   {
-                                      return !root_nodes2.insert(x).second;
+                                      return !seen.insert(x).second;
                                   }),
-                   root_nodes3.end());
-
-    std::vector<int> root_nodes(root_nodes2.begin(), root_nodes2.end());
-    std::reverse(root_nodes.begin(), root_nodes.end());
-
-    // Finds first digit and pushes it to another vector:
-    // https://www.scaler.com/topics/cpp-program-to-find-first-and-last-digit-of-a-number/
-    for (int num2 : unique_values) {
-        int first_digit = num2;
-
-        while (first_digit >= 10) {
-            first_digit /= 10;
-        }
-        sorted_array[first_digit].push_back(num2);
-    }
-
-    std::vector<int> inOrder;
-    std::vector<std::string> inOrderPair;
-
-   // Printing via pairs
-   // https://stackoverflow.com/questions/19228994/how-to-print-a-type-vectorpairchar-int-to-screen-c
-    for (auto &x : sorted_array)
-    {
-        std::string inOrder_pairs = std::to_string(x.first) + ":";
-        inOrder.push_back(x.first);  // stores 'first' elements from the vector pair
-        // std::cout << x.first << ":";
-        for (int num2 : x.second) {
-            // std::cout << num2 << " ";
-            inOrder_pairs += std::to_string(num2) + " ";
-        }
-        // std::cout << std::endl;
-        inOrderPair.push_back(inOrder_pairs); // Add the pair entry to inOrderPair
-    }
+                   preOrder.end());
 
 
     //Converts inOrder and preOrder into arrays from vectors
-    int n = inOrder.size();
-    int in[n];
+    const int N = inOrder.size();
+    int in[N];
     copy(inOrder.begin(), inOrder.end(), in);
 
-    std::vector<int> preOrder;
+    // creates a preOrder integer array
+    const int N2 = preOrder.size();
+    int pre[N2];
+    copy(preOrder.begin(), preOrder.end(), pre);
 
-    int n2 = root_nodes.size();
-    int pre[n2];                                                       // pre = postOrder
-    copy(root_nodes.begin(), root_nodes.end(), pre);
 
-    std::vector<int> postOrder = printPostorder(in, pre, n);
+    // uses the other traversals to create a vector for postOrder
+    std::vector<int> postOrder = printPostorder(in, pre, 0, N - 1);
 
-    int n3 = postOrder.size();
-    int post[n3];
+
+    // creates a postOrder integer array through a 'copy'
+    const int N3 = postOrder.size();
+    int post[N3];
     copy(postOrder.begin(), postOrder.end(), post);
 
-    int size2 = sizeof(pre) / sizeof(pre[0]);
+    const int SIZE2 = sizeof(pre) / sizeof(pre[0]);
 
-    //Builds the tree
-    node* root = constructTree(pre, post, size2);
+    // builds the tree (Inorder traversal)
+    node* root = ConstructTree(pre, post, SIZE2);
     std::vector<std::string> depth_pre = printInorder(root, 0);
 
-    //// string comparisons
-    int pre_size = sizeof(pre) / sizeof(pre[0]);  //pre string
+    // converts an integer vector (preOrder) into a string vector
+    const int PRE_SIZE = sizeof(pre) / sizeof(pre[0]);
     std::vector<std::string> preString;
 
-    for (int i = 0; i < pre_size; i++) {
+    for (int i = 0; i < PRE_SIZE; i++)
+    {
         preString.push_back(std::to_string(pre[i]));
     }
 
-
-    int post_size = sizeof(post) / sizeof(post[0]);  // post string
+    // converts postOrder into a string vector
+    const int POST_SIZE = sizeof(post) / sizeof(post[0]);
     std::vector<std::string> postString;
 
-    for (int i = 0; i < post_size; i++) {
+    for (int i = 0; i < POST_SIZE; i++)
+    {
         postString.push_back(std::to_string(post[i]));
     }
 
-    // Strings
-
+    // empty vectors to store new strings in
     std::vector<std::string> pre2;
     std::vector<std::string> post2;
 
-
-    for (const std::string& str1 : preString) {
-        for (const std::string& str2 : inOrderPair) {
-            if (str1[0] == str2[0]) {
-                pre2.push_back(str2);
+    // pushes leaf nodes to root notes for preOrder
+    for (const std::string& STR1 : preString)
+    {
+        for (const std::string& STR2 : inOrderPair)
+        {
+            if (STR1[0] == STR2[0])
+            {
+                pre2.push_back(STR2);
             }
         }
     }
 
-    for (const std::string& str1 : postString) {
-        for (const std::string& str2 : inOrderPair) {
-            if (str1[0] == str2[0]) {
-                post2.push_back(str2);
+    // pushes leaf nodes to root notes for postOrder
+    for (const std::string& STR1 : postString)
+    {
+        for (const std::string& STR2 : inOrderPair)
+        {
+            if (STR1[0] == STR2[0])
+            {
+                post2.push_back(STR2);
             }
         }
     }
 
+    // adds depth levels to all levels for preString
     std::cout << "Pre-String" << std::endl;
-    for (const std::string& str1 : pre2) {
-        for (const std::string& str2 : depth_pre) {
-            if (str1[0] == str2.back()) {
-                std::string substr = str1.substr(1);
-                std::cout << str2 << substr << std::endl;
+    for (const std::string& STR1 : pre2)
+    {
+        for (const std::string& STR2 : depth_pre)
+        {
+            if (STR1[0] == STR2.back())
+            {
+                std::string substr = STR1.substr(1);
+                std::cout << STR2 << substr << std::endl;
             }
         }
     }
 
-    std::cout << std::endl;
+    std::cout << std::endl;  // spacing
 
+    // adds depth level string to the beginning of postOrder
     std::cout << "Post-String" << std::endl;
-    for (const std::string& str1 : post2) {
-        for (const std::string& str2 : depth_pre) {
-            if (str1[0] == str2.back()) {
+    for (const std::string& str1 : post2)
+    {
+        for (const std::string& str2 : depth_pre)
+        {
+            if (str1[0] == str2.back())
+            {
                 std::string substr = str1.substr(1);
                 std::cout << str2 << substr << std::endl;
             }
         }
     }
 
-    std::cout << std::endl;
+    std::cout << std::endl;  // spacing
 
+    // adds depth level string to the beginning of inOrder
     std::cout << "Inorder-String" << std::endl;
-    for (const std::string& str1 : inOrderPair) {
-        for (const std::string& str2 : depth_pre) {
-            if (str1[0] == str2.back()) {
+    for (const std::string& str1 : inOrderPair)
+    {
+        for (const std::string& str2 : depth_pre)
+        {
+            if (str1[0] == str2.back())
+            {
                 std::string substr = str1.substr(1);
                 std::cout << str2 << substr << std::endl;
             }
@@ -185,74 +188,91 @@ void buildTree(const std::string& node_str) {
 
 }
 
-// "search" and "printPostOrder" functions from here:
+// "search" and "printPostOrder" functions modified from here:
 // https://www.geeksforgeeks.org/print-postorder-from-given-inorder-and-preorder-traversals/
-int search(int arr[], int x, int n)
+int Search(int arr[], int startIn,int endIn, int data)
 {
-    for (int i = 0; i < n; i++)
-        if (arr[i] == x)
+    int i;
+    for (i = startIn; i < endIn; i++)
+    {
+        if (arr[i] == data)
+        {
             return i;
-    return -1;
+        }
+    }
+    return i;
 }
 
-std::vector<int> printPostorder(int in[], int pre[], int n)
+// uses 'preOrder' and 'inOrder' traversals to return 'postOrder'
+std::vector<int> printPostorder(int arr[], int pre[], int inStrt, int inEnd)
 {
+    int preIndex = 0;
+
     std::vector<int> postOrder;
 
-    int root = search(in, pre[0], n);
-
-    if (root != 0)
+    if (inStrt > inEnd)
     {
-        std::vector<int> leftPostorder = printPostorder(in, pre + 1, root);
-        postOrder.insert(postOrder.end(), leftPostorder.begin(), leftPostorder.end());
+        return postOrder;
     }
 
-    if (root != n - 1)
-    {
-        std::vector<int> rightPostorder = printPostorder(in + root + 1, pre + root + 1, n - root - 1);
-        postOrder.insert(postOrder.end(), rightPostorder.begin(), rightPostorder.end());
-    }
+    // Looks for the index of the next number in the traversal
+    int inIndex = Search(arr, inStrt, inEnd, pre[preIndex++]);
 
-    postOrder.push_back(pre[0]);
+    // Traversal for the left tree
+    std::vector<int> leftPostorder = printPostorder(arr, pre, inStrt, inIndex - 1);
+    postOrder.insert(postOrder.end(), leftPostorder.begin(), leftPostorder.end());
+
+    // Traversal for the right tree
+    std::vector<int> rightPostorder = printPostorder(arr, pre, inIndex + 1, inEnd);
+    postOrder.insert(postOrder.end(), rightPostorder.begin(), rightPostorder.end());
+
+    // Adds the root node to the beginning of the traversal
+    postOrder.push_back(arr[inIndex]);
 
     return postOrder;
 }
 
-// "printInorder", "newNode", "constructTreeUtil", "constructTree" functions are from the below url:
+// "printInorder", "newNode", "constructTreeUtil", "constructTree" functions are modified from the below url:
 // https://www.geeksforgeeks.org/full-and-complete-binary-tree-from-given-preorder-and-postorder-traversals/
-node* newNode(int data) {
+node* newNode(int data)
+{
     node* temp = new node();
     temp->data = data;
-    temp->left = temp->right = NULL;
+    temp->left = temp->right = nullptr;
     return temp;
 }
 
-node* constructTreeUtil(int pre[], int post[], int* preIndex, int l, int h, int size) {
+node* ConstructTreeUtil(int pre[], int post[], int* preIndex, int l, int h, int size) {
     if (*preIndex >= size || l > h)
-        return NULL;
+        return nullptr;
 
+    // assumes that the first number is the root
     node* root = newNode(pre[*preIndex]);
     ++*preIndex;
 
+    // prevents recursion if the current subarray has one element
     if (l == h)
         return root;
 
+    //searches 'preOrder' and 'postOrder' lists for the next element
     int i;
     for (i = l; i <= h; ++i)
         if (pre[*preIndex] == post[i])
             break;
 
-    if (i <= h) {
-        root->left = constructTreeUtil(pre, post, preIndex, l, i, size);
-        root->right = constructTreeUtil(pre, post, preIndex, i + 1, h - 1, size);
+    // divides tree into left and right branches
+    if (i <= h)
+    {
+        root->left = ConstructTreeUtil(pre, post, preIndex, l, i, size);
+        root->right = ConstructTreeUtil(pre, post, preIndex, i + 1, h - 1, size);
     }
 
     return root;
 }
 
-node* constructTree(int pre[], int post[], int size) {
+node* ConstructTree(int pre[], int post[], int size) {
     int preIndex = 0;
-    return constructTreeUtil(pre, post, &preIndex, 0, size - 1, size);
+    return ConstructTreeUtil(pre, post, &preIndex, 0, size - 1, size);
 }
 
 std::vector<std::string> printInorder(node* node, int depth) {
@@ -270,12 +290,12 @@ std::vector<std::string> printInorder(node* node, int depth) {
     std::string line = std::string(num, star) + std::to_string(node->data);
     inOrder.push_back(line);
 
-    // Concatenate the left and right subtree results
+    // Splits nodes into left and right branches using 'node'
     std::vector<std::string> leftBranch = printInorder(node->left, depth + 1);
     std::vector<std::string> rightBranch = printInorder(node->right, depth + 1);
 
     inOrder.insert(inOrder.end(), leftBranch.begin(), leftBranch.end());
     inOrder.insert(inOrder.end(), rightBranch.begin(), rightBranch.end());
 
-    return inOrder;
+    return inOrder;  //builds tree and returns depth level
 }
