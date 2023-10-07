@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <unordered_set>
 #include <string>
-#include <algorithm>
 
 void buildTree(const std::string& node_str)
 {
@@ -25,10 +24,12 @@ void buildTree(const std::string& node_str)
 
     std::map<int, std::vector<int>> firstDigits;
 
-    for (int num : node_int) {
+    for (int num : node_int)
+    {
         int first_digit = num;
 
-        while (first_digit >= 10) {
+        while (first_digit >= 10)
+        {
             first_digit /= 10;
         }
 
@@ -39,10 +40,14 @@ void buildTree(const std::string& node_str)
     std::vector<std::string> inOrderPair;
 
     // Print the organized arrays
-    for (const auto& entry : firstDigits) {
+    for (const auto& entry : firstDigits)
+    {
+
         inOrder.push_back(entry.first);
         std::string inOrder_pairs = std::to_string(entry.first) + ":";
-        for (int num : entry.second) {
+
+        for (int num : entry.second)
+        {
             inOrder_pairs += std::to_string(num) + " ";
         }
         inOrderPair.push_back(inOrder_pairs);
@@ -60,6 +65,8 @@ void buildTree(const std::string& node_str)
 
     std::unordered_set<int> seen;
 
+    // removes duplicate numbers; function modified from this website:
+    // https://www.reddit.com/r/cpp_questions/comments/bjims8/the_best_way_to_remove_duplicates_from_vector_of/
     preOrder.erase(std::remove_if(preOrder.begin(), preOrder.end(),
                                   [&seen](int x)
                                   {
@@ -78,10 +85,8 @@ void buildTree(const std::string& node_str)
     int pre[N2];
     copy(preOrder.begin(), preOrder.end(), pre);
 
-
     // uses the other traversals to create a vector for postOrder
     std::vector<int> postOrder = printPostorder(in, pre, 0, N - 1);
-
 
     // creates a postOrder integer array through a 'copy'
     const int N3 = postOrder.size();
@@ -140,8 +145,12 @@ void buildTree(const std::string& node_str)
         }
     }
 
-    // adds depth levels to all levels for preString
-    std::cout << "Pre-String" << std::endl;
+    // initializes string variables for output filenames
+    std::string preData;
+    std::string postData;
+    std::string inData;
+
+    // adds depth levels to all levels for "preString"
     for (const std::string& STR1 : pre2)
     {
         for (const std::string& STR2 : depth_pre)
@@ -149,48 +158,59 @@ void buildTree(const std::string& node_str)
             if (STR1[0] == STR2.back())
             {
                 std::string substr = STR1.substr(1);
-                std::cout << STR2 << substr << std::endl;
+                preData += STR2 + substr + "\n";
             }
         }
     }
 
-    std::cout << std::endl;  // spacing
-
-    // adds depth level string to the beginning of postOrder
-    std::cout << "Post-String" << std::endl;
-    for (const std::string& str1 : post2)
+    // adds depth level string to the beginning of "postOrder"
+    for (const std::string& STR1 : post2)
     {
-        for (const std::string& str2 : depth_pre)
+        for (const std::string& STR2 : depth_pre)
         {
-            if (str1[0] == str2.back())
+            if (STR1[0] == STR2.back())
             {
-                std::string substr = str1.substr(1);
-                std::cout << str2 << substr << std::endl;
+                std::string substr = STR1.substr(1);
+                postData += STR2 + substr + "\n";
             }
         }
     }
 
-    std::cout << std::endl;  // spacing
-
-    // adds depth level string to the beginning of inOrder
-    std::cout << "Inorder-String" << std::endl;
-    for (const std::string& str1 : inOrderPair)
+    // adds depth level string to the beginning of "inOrder"
+    for (const std::string& STR1 : inOrderPair)
     {
-        for (const std::string& str2 : depth_pre)
+        for (const std::string& STR2 : depth_pre)
         {
-            if (str1[0] == str2.back())
+            if (STR1[0] == STR2.back())
             {
-                std::string substr = str1.substr(1);
-                std::cout << str2 << substr << std::endl;
+                std::string substr = STR1.substr(1);
+                inData += STR2 + substr + "\n";
             }
         }
     }
+
+    std::string tempName;  // stores filename entered by the user
+    std::cout << "Enter output file name (or press 'enter' on the keyboard for the default option 'out'):\n";
+    std::getline(std::cin, tempName);
+
+    // provides default name "out" if one isn't given by the user
+    tempName = (tempName.empty()) ? "out" : tempName;
+
+    // creates filenames for all traversals
+    std::string preFileName = tempName + ".preorder";
+    std::string postFileName = tempName + ".postorder";
+    std::string inFileName = tempName + ".inorder";
+
+    // calls function 'writeToFile' to print traversals to their respective files
+    writeToFile(preFileName, preData);
+    writeToFile(postFileName, postData);
+    writeToFile(inFileName, inData);
 
 }
 
-// "search" and "printPostOrder" functions modified from here:
+// "printPreorder" and "printPostOrder" functions modified from here:
 // https://www.geeksforgeeks.org/print-postorder-from-given-inorder-and-preorder-traversals/
-int Search(int arr[], int startIn,int endIn, int data)
+int printPreorder(int arr[], int startIn, int endIn, int data)
 {
     int i;
     for (i = startIn; i < endIn; i++)
@@ -216,7 +236,7 @@ std::vector<int> printPostorder(int arr[], int pre[], int inStrt, int inEnd)
     }
 
     // Looks for the index of the next number in the traversal
-    int inIndex = Search(arr, inStrt, inEnd, pre[preIndex++]);
+    int inIndex = printPreorder(arr, inStrt, inEnd, pre[preIndex++]);
 
     // Traversal for the left tree
     std::vector<int> leftPostorder = printPostorder(arr, pre, inStrt, inIndex - 1);
@@ -242,7 +262,8 @@ node* newNode(int data)
     return temp;
 }
 
-node* ConstructTreeUtil(int pre[], int post[], int* preIndex, int l, int h, int size) {
+node* ConstructTreeUtil(int pre[], int post[], int* preIndex, int l, int h, int size)
+{
     if (*preIndex >= size || l > h)
         return nullptr;
 
@@ -270,11 +291,14 @@ node* ConstructTreeUtil(int pre[], int post[], int* preIndex, int l, int h, int 
     return root;
 }
 
-node* ConstructTree(int pre[], int post[], int size) {
+// constructs the node tree
+node* ConstructTree(int pre[], int post[], int size)
+{
     int preIndex = 0;
     return ConstructTreeUtil(pre, post, &preIndex, 0, size - 1, size);
 }
 
+// returns 'inOrder' traversal as a string vector
 std::vector<std::string> printInorder(node* node, int depth) {
 
     std::vector<std::string> inOrder;
@@ -298,4 +322,21 @@ std::vector<std::string> printInorder(node* node, int depth) {
     inOrder.insert(inOrder.end(), rightBranch.begin(), rightBranch.end());
 
     return inOrder;  //builds tree and returns depth level
+}
+
+// writes traversal data to three separate files
+void writeToFile(const std::string& filename, const std::string& data)
+{
+    std::ofstream outFile(filename);
+
+    if (outFile.is_open())
+    {
+        outFile << data;
+        outFile.close();
+        std::cout << "File " << filename << " written successfully.\n";
+    }
+    else
+    {
+        std::cerr << "Error opening the File: " << filename << std::endl;
+    }
 }
