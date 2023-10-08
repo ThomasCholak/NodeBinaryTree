@@ -6,7 +6,8 @@
 #include <cstddef>
 
 // each node stores a value and what value is to the right and left of it
-class node {
+class node
+{
 public:
     int data;
     node* left;

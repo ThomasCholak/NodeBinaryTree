@@ -1,12 +1,10 @@
-// Thomas Cholak
-
 #include "tree.h"
-#include <string>
+#include "tree.cpp"
 
+#include <string>
 #include <iostream>
 #include <fstream>
 
-// 'main' accepts file arguments in case user redirects a file into the program
 int main(int argc, char* argv[])
 {
     std::ifstream inFile;
@@ -18,7 +16,7 @@ int main(int argc, char* argv[])
         std::cerr << "Error: Please only input one File.\n";
         return 1; //exits program due to error
     }
-    // processes file if only one argument is provided
+        // processes file if only one argument is provided
     else if (argc == 2)
     {
         // looks for if a file is present in Linux
@@ -43,24 +41,6 @@ int main(int argc, char* argv[])
         buildTree(file_str);
         inFile.close();
 
-        while (true)
-        {
-            // Read a string from the user
-            std::cout << "Enter your numbers (place a space between each integer):" << std::endl;
-            std::getline(std::cin, file_str);
-
-            if (dataValidation(file_str))
-            {
-                // breaks loop if data conditions are met
-                break;
-            }
-            else
-            {
-                std::cout << "Invalid Data. Please enter a line of numbers with a space in between.\n";
-            }
-        }
-        // builds a binary tree with file data
-        buildTree(file_str);
     }
     else
     {
